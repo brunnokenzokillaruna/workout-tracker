@@ -1,22 +1,31 @@
 # Dependencies
 node_modules/
-.pnp
-.pnp.js
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # Next.js build output
-.next/
-out/
-build/
+/.next/
+/out/
+/build/
 dist/
 
-# Environment variables — never commit secrets
-.env
-.env*.local
-.env.development
-.env.production
+# Environment variables — never commit secrets.
+# This repository is public: a committed credential is a leaked credential,
+# and it stays in the history even after being deleted.
+.env*
+!.env.example
+
+# Certificates and keys
+*.pem
+*.key
 
 # Testing
-coverage/
+/coverage
 playwright-report/
 test-results/
 blob-report/
@@ -31,7 +40,7 @@ next-env.d.ts
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
+.pnpm-debug.log*
 
 # Editors and OS
 .vscode/*

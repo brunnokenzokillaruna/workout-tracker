@@ -57,7 +57,7 @@ flowchart LR
 
 | | |
 |--|--|
-| **Chosen** | React |
+| **Chosen** | React — **installed: 19.2.8** |
 | **Why** | Huge job market; matches learning resources (React docs); pairs with Next.js and shadcn |
 | **Why not Vue / Svelte** | Not worse — smaller hiring signal for many local markets; you’d learn two ecosystems if you jump later |
 | **Cost** | $0 |
@@ -68,11 +68,18 @@ flowchart LR
 
 | | |
 |--|--|
-| **Chosen** | Next.js (App Router) |
+| **Chosen** | Next.js (App Router) — **installed: 16.3.3** |
 | **Why** | UI + API in one project; file-based routing; good Amplify support; common in portfolios |
 | **Why not Vite SPA + separate Express** | Teaches “pure” backend more clearly, but doubles deploy/config and slows MVP |
 | **Why not Remix / Nuxt** | Fine tools; React+Next is the safer default for your learning + hiring goals |
 | **Cost** | $0 (framework) |
+
+**Version note (important).** Next.js 16 changed enough that guidance written for versions 13-15 is often wrong. Two consequences for how we work:
+
+1. The package ships its full documentation to `node_modules/next/dist/docs/`, which is authoritative **for the exact installed version**. That is the first source to check, ahead of any blog post or model recollection.
+2. `next dev` generates and maintains `AGENTS.md` at the repository root, pointing agents at those docs. It is committed on purpose — removing it only causes it to be recreated as an uncommitted change. `CLAUDE.md` is a one-line pointer to the same file.
+
+Known renames and additions to watch for as we build: `middleware` is now `proxy`, caching moved to explicit `use cache` / `cacheComponents`, and typed routes are available via `typedRoutes`. Each will be verified against the local docs before use rather than assumed.
 
 ---
 
@@ -92,12 +99,14 @@ flowchart LR
 
 | | |
 |--|--|
-| **Chosen** | Tailwind CSS + **shadcn/ui** |
+| **Chosen** | Tailwind CSS (**installed: v4**) + **shadcn/ui** |
 | **Why** | Mobile-first utilities; shadcn **copies components into your repo** so you own and can explain the code (good for learning) |
 | **Why not only hand-written CSS** | Too slow for a polished responsive gym UI |
 | **Why not Material UI (MUI)** | Heavier, more “black box”, generic look; harder to customize without fighting the library |
 | **Why not Chakra / Mantine** | Also fine; shadcn + Tailwind is the current common Next.js path and keeps CSS skills visible |
 | **Cost** | $0 |
+
+**Version note.** Tailwind v4 configures itself in **CSS**, not JavaScript — there is no `tailwind.config.js`, and the scaffold did not create one. Design tokens are declared with `@theme` inside the global stylesheet. This is where the colour palette, spacing scale, and tabular-numeral typography from [DESIGN_SPEC 2.1-2.3](./DESIGN_SPEC.md) will live, so most tutorials showing a JS config object do not apply.
 
 ---
 
