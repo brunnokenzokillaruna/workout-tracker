@@ -208,15 +208,18 @@ Known renames and additions to watch for as we build: `middleware` is now `proxy
 
 ---
 
-### 2.13 Database hosting — Neon or Supabase (with Amplify app)
+### 2.13 Database hosting — Neon (decided)
 
 | | |
 |--|--|
-| **Chosen** | **Neon** or **Supabase** free PostgreSQL |
-| **Why** | Free **ongoing** hobby usage; Amplify still gives you the AWS deploy story |
-| **Why not RDS free tier as default** | 12‑month free tier then easy surprise bills if forgotten |
-| **Portfolio framing** | “App on AWS Amplify; managed Postgres on Neon/Supabase for $0. Can migrate to RDS later.” |
-| **Cost** | $0 on free plans |
+| **Chosen by Brunno** | **Neon** free PostgreSQL |
+| **Why** | Free tier is ongoing rather than time-limited; the project is never paused for inactivity; **database branching** lets us rehearse a destructive migration on an isolated copy before touching real data |
+| **Why not Supabase** | Familiar (already used on another project), but free projects are **paused after about a week of inactivity** — bad for a portfolio link a recruiter may open weeks later. Half its value is the bundled auth, which is redundant since we chose Auth.js |
+| **Why not Prisma Postgres** | Provisions in one command, but newer and less recognised by employers than Neon |
+| **Why not local Postgres in Docker** | No quotas, but requires Docker and does not serve the deployed app, so we would maintain two databases |
+| **Why not RDS free tier as default** | 12-month free tier then easy surprise bills if forgotten |
+| **Portfolio framing** | “App on AWS Amplify; managed Postgres on Neon for $0. Can migrate to RDS later.” |
+| **Cost** | $0 on free plan |
 
 ---
 
@@ -336,7 +339,7 @@ You should be able to say:
 
 Edit answers here when you decide:
 
-- [ ] Neon **or** Supabase for Postgres?  
+- [x] Neon **or** Supabase for Postgres? → **Neon** (see 2.13: does not pause on inactivity; database branching)  
 - [ ] Google OAuth only, or also email/password?  
 - [ ] Confirm intensity techniques for MVP (drop set / rest-pause / …)  
 - [ ] Any must-have muscle-emphasis list beyond shoulders example?  
