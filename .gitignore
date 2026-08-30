@@ -65,8 +65,15 @@ amplify_outputs*.json
 
 # Agent tooling installed into the workspace, not part of the project
 .agents/
+.claude/
+.windsurf/
 skills-lock.json
+
+# Prisma client generated from the schema — rebuilt by `prisma generate`
+src/generated/
 
 # Personal study notes — kept out of the portfolio repository by choice.
 # NOTE: this means they have no backup and no history. Copy them elsewhere.
 docs/learning/
+
+/src/generated/prisma
