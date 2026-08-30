@@ -76,6 +76,18 @@ flowchart LR
 
 ---
 
+### 2.3.1 Animation — Motion (framer-motion successor)
+
+| | |
+|--|--|
+| **Chosen** | **Motion** for React |
+| **Why** | Interruptible springs instead of fixed timelines, which matters when a user taps faster than an animation finishes; small enough for the budgeted approach in [DESIGN_SPEC 2.4](./DESIGN_SPEC.md) |
+| **Why not CSS transitions only** | Fine for the fast tiers, but the signature moments need orchestration and interruption that CSS alone handles poorly |
+| **Why not GSAP** | More powerful and heavier than a four-moment motion budget justifies |
+| **Cost** | $0 |
+
+---
+
 ### 2.4 Styling & components — Tailwind CSS + shadcn/ui
 
 | | |
@@ -142,8 +154,10 @@ flowchart LR
 
 | | |
 |--|--|
-| **Chosen** | Native browser APIs (`setInterval` / `requestAnimationFrame`, `Audio` / `AudioContext`); optional **Wake Lock API** later |
+| **Chosen** | Native browser APIs (`setInterval` / `requestAnimationFrame`, **`AudioContext` with synthesised cues**); optional **Wake Lock API** later |
 | **Why** | No extra dependency for MVP; you learn how the browser really works |
+| **Why synthesised, not audio files** | Distinctive sound identity with zero bytes downloaded, no licensing, and no network at the moment the timer hits zero. Full palette in [DESIGN_SPEC 2.5](./DESIGN_SPEC.md) |
+| **Gotcha** | Mobile browsers block audio until a user gesture — the context must be resumed on the "start workout" tap, or the timer ends in silence |
 | **Why not a heavy timer library** | Unnecessary until native approach proves painful |
 | **Limits** | Mobile browsers throttle timers/audio when the tab is backgrounded or the phone is locked. Design for **workout screen active**; don’t promise native-app background behavior |
 | **Cost** | $0 |

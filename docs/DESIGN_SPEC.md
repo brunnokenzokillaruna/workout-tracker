@@ -91,16 +91,74 @@ Atmosphere comes from a faint grain overlay on `--surface-0` (about 3% opacity n
 
 No drop shadows on dark surfaces — elevation is expressed by the surface ladder above and by hairlines.
 
-### 2.4 Motion
+### 2.4 Motion system
 
-Restrained and functional, `Motion` for React where it earns its place:
+Motion has a real tension to resolve here: the gym rewards speed and stillness, while a polished product wants life. The resolution is a **motion budget** — fast everywhere, generous in a few chosen moments, and absent where data is being entered.
 
-- Stepper press: 80ms scale-down plus a volt flash on the digit. Confirms the tap without waiting for network.
-- Set completed: the row collapses to a compact summary in 200ms, and the next set becomes active.
-- Rest timer: the arc sweeps continuously; the last 3 seconds pulse the numeral.
-- Screen transitions: 150ms fade and 8px rise. No slide carousels.
+Implemented with the `Motion` library for React (TECH_STACK 2.2), which gives interruptible springs rather than fixed timelines.
 
-All motion respects `prefers-reduced-motion`, which disables transforms and keeps opacity changes only.
+#### Tokens
+
+| Token | Duration | Easing | Use |
+|-------|----------|--------|-----|
+| `instant` | 80ms | `ease-out` | Press feedback: steppers, buttons |
+| `quick` | 150ms | `cubic-bezier(0.2, 0, 0, 1)` | Screen fades, badge changes |
+| `base` | 220ms | `cubic-bezier(0.2, 0, 0, 1)` | Row collapse, sheet open, list reflow |
+| `slow` | 350ms | spring `{ stiffness: 220, damping: 26 }` | Rest-timer takeover, summary reveal |
+| `signature` | 500-800ms | spring `{ stiffness: 180, damping: 22 }` | Personal record, workout finish |
+| `stagger` | 40ms | — | Delay between items in a sequential reveal |
+
+Exits are faster than entrances (roughly 70% of the duration). Something leaving should not make the user wait.
+
+#### Hierarchy
+
+**Tier 1 — feedback (0-100ms).** Confirms a touch happened. Never waits for the network: the digit updates and flashes immediately, and the server catches up.
+
+**Tier 2 — transition (150-250ms).** Explains *where things went*: a completed set collapsing into a summary line, a sheet rising, a screen changing.
+
+**Tier 3 — signature (350-800ms).** Four moments in the entire app get to be beautiful:
+
+1. **Workout start** — the exercise strip reveals in sequence, 40ms stagger, so the session's shape registers before the first set.
+2. **Set completed** — the numeral flashes volt, the row collapses to its summary, the next set expands as it goes, and the rest timer takes over. Overlapping, not queued, so it reads as one motion of about 400ms.
+3. **Personal record** — a hazard-stripe sweep across the row and a single numeral pop to 1.08 and back. Fires once, never loops.
+4. **Workout finished** — the summary screen reveals its stats in sequence.
+
+#### Rules
+
+- **Nothing animates under the thumb during entry.** Movement while typing weight or reps slows input and reads as a bug.
+- **Motion never delays data.** The UI updates optimistically; animation decorates a change that already happened.
+- **Everything is interruptible.** A user tapping fast must never be blocked by an animation in flight.
+- **Only `transform` and `opacity`.** Animating `width`, `height`, `top`, or `left` forces layout on every frame and drops below 60fps on a mid-range phone.
+- **No ambient looping animation.** It costs battery during a session that can run 90 minutes.
+- **`prefers-reduced-motion` is honoured:** transforms and the arc sweep are dropped, states change by opacity, and the timer updates as plain numbers.
+
+### 2.5 Sound design
+
+Sounds are **synthesised in the browser** with the Web Audio API, not loaded as audio files (decision 9.9). That means no downloads, no licensing, no network latency — and full control to tune a signature that belongs to this app rather than a stock notification beep.
+
+The identity matches the visual direction: **mechanical and tuned**, like gym hardware. Low and physical for completion, clean intervals for alerts. Never cute, never a marimba.
+
+| Event | Sound | Spec |
+|-------|-------|------|
+| Stepper press | Dry click | 2 kHz sine, 30ms, steep decay, quiet (about -20dB); disabled by default |
+| Set completed | Low thunk | 110 Hz sine layered with a triangle, 120ms, fast attack, exponential decay |
+| Rest started | Soft low tone | 220 Hz, 150ms |
+| Rest, final 3 seconds | Three ticks | 880 Hz, 40ms each, one per second |
+| **Rest finished** | **Rising two-tone** | 660 Hz then 990 Hz (a perfect fifth), 180ms each, slightly overlapping — the app's signature cue |
+| Work timer finished | Falling two-tone | The same pair inverted, so it is distinguishable from rest-end without looking |
+| Personal record | Ascending arpeggio | 660, 880, 1320 Hz, 100ms each |
+| Error | Short buzz | 160 Hz square, 90ms |
+
+Rest-end and work-end being inverses of each other is deliberate: FEATURES section 6 requires the user to act on sound alone, with the phone in a pocket, so the two cues must be told apart by ear.
+
+#### Implementation constraints
+
+- **One `AudioContext`, created lazily.** Constructing it on page load is wasteful and starts suspended anyway.
+- **Unlock on the first user gesture.** Mobile browsers block audio until the user interacts, so the context is resumed on the "start workout" tap. Without this, the timer reaches zero in silence — the single most likely bug in this feature.
+- **Envelope with exponential ramps.** Ramping gain linearly to zero produces an audible click; `exponentialRampToValueAtTime` to a small non-zero value, then stop, avoids the pop.
+- **A master gain node** carries the volume and mute setting from Profile.
+- **Sound is never the only channel.** Every cue has a visual equivalent (section 8), which also covers browser throttling and a phone on silent. iOS in particular may suppress Web Audio with the ringer switch off, and that cannot be worked around — so the visual state has to stand alone.
+- The synthesis lives in one small module, unit-testable for the envelope maths and mockable elsewhere.
 
 ---
 
@@ -333,6 +391,26 @@ With steppers, digits change constantly. Proportional figures shift widths and m
 **Chosen by Brunno:** charts are a segment within the History tab, not a fifth tab.
 
 **Why:** history and progress answer the same question at different zoom levels — "what have I done?". Keeping four tabs also protects the thumb-reachable width of each one.
+
+### 9.9 Sounds are synthesised, not files
+
+**Chosen by Brunno:** generate every cue with the Web Audio API instead of shipping audio assets.
+
+**Why:** a distinctive sound identity with zero bytes downloaded, zero licensing questions, and no network dependency at the exact moment it matters — the timer hitting zero. Frequencies and envelopes are tunable in code, so the palette can be refined without sourcing new assets. It also builds directly on the native-APIs decision in TECH_STACK 2.9.
+
+**Rejected — licensed audio files:** richer, more textured sound, but every cue needs a license check, adds weight to preload, and pulls the palette toward stock notification sounds that belong to no product in particular.
+
+**Cost and risk:** synthesis can sound cheap if done naively. Mitigated by layering two oscillators, shaping a proper attack-decay envelope, and using musical intervals rather than arbitrary beeps. The other real risk is the mobile autoplay lock, handled by resuming the context on the first gesture.
+
+### 9.10 Motion is budgeted, not sprinkled
+
+**Chosen:** three tiers — instant feedback, quick transitions, and exactly four signature moments — with animation forbidden during data entry.
+
+**Why:** scattered micro-interactions everywhere read as noise and, on the logging screen, actively slow the user down. Concentrating the budget makes the moments that do animate feel intentional.
+
+**Rejected — animating broadly for polish:** it competes with the primary task, costs battery over a 90-minute session, and risks dropping frames on a mid-range phone.
+
+**Rejected — no motion at all:** the app would feel dead, and transitions carry real information about where content went.
 
 ---
 

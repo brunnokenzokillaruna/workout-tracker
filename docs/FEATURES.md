@@ -100,6 +100,8 @@ Edit the checkboxes and `status` as you decide.
 | [ ] Last weight / reps suggestion | `mvp` | Slow logging | Faster sets | From last session |
 | [ ] Simple history list | `mvp` | “What did I do?” | Review past workouts | Charts in v1 |
 | [ ] Responsive mobile-first UI | `mvp` | Gym = phone | Usable between sets | shadcn + Tailwind |
+| [ ] Synthesised sound cues | `mvp` | Generic beeps, no identity | Distinguish rest-end from work-end by ear | Web Audio API, no files |
+| [ ] Motion system (budgeted) | `mvp` | Static feels dead; excess slows entry | Polished without fighting the task | 3 tiers, 4 signature moments |
 
 ---
 
@@ -155,6 +157,8 @@ Edit the checkboxes and `status` as you decide.
 1. Rest timer finished → “start next set/exercise”  
 2. Work/duration timer finished → “stop / next”  
 3. (Optional later) other workout milestones  
+
+**Sound identity:** cues are **synthesised in the browser** (no audio files) so the app has its own recognisable palette. Rest-end and work-end are deliberate inverses of each other — rising versus falling — so they can be told apart with the phone in a pocket. Full palette in [DESIGN_SPEC 2.5](./DESIGN_SPEC.md).
 
 **Honest web limits (document for users later):**
 
