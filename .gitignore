@@ -53,3 +53,7 @@ amplify_outputs*.json
 # Agent tooling installed into the workspace, not part of the project
 .agents/
 skills-lock.json
+
+# Personal study notes — kept out of the portfolio repository by choice.
+# NOTE: this means they have no backup and no history. Copy them elsewhere.
+docs/learning/
