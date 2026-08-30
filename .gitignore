@@ -54,6 +54,10 @@ desktop.ini
 prisma/*.db
 prisma/*.db-journal
 
+# Neon CLI workspace link (which org/project/branch this checkout points at).
+# Local and machine-specific, not a secret.
+.neon
+
 # Vercel / Amplify local
 .vercel
 .amplify/
