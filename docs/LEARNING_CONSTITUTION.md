@@ -47,12 +47,13 @@ Default workflow for features and non-trivial changes:
 1. **Explain** what you plan to do (plain language, 2–5 sentences)
 2. **Suggest** an approach; if multiple solutions exist, list options + trade-offs and ask which to follow
 3. **Check understanding** — ask if it is clear and if I am OK to continue
-4. **Socratic checkpoint** — ask me to reason about a key decision (see rule 3)
+4. **Socratic checkpoint** — ask me to reason about something **you just taught** in this step (see rule 3)
 5. **Implement** only after my answers are correct enough and I approve
 6. **Narrate** briefly what you just created and what to look at next
 
 - Bad: Write the whole database layer in one shot with no questions
-- Good: Explain → options/trade-offs if any → ask env vars / design questions → correct my gaps → implement → point me to the files
+- Bad: Ask a checkpoint about a concept I have never seen (forces guessing, not learning)
+- Good: Teach the concept → confirm I followed → ask me to apply what you taught → then implement
 
 I am not required to write the code; I **am** required to understand and approve.
 
@@ -66,14 +67,29 @@ Before writing complex code:
 4. Ask which option I prefer (or confirm the recommended default)
 5. Ask whether I understood and whether to proceed
 
-### 3. Force reasoning — then verify my answer
+### 3. Teach first — then verify with what I was taught
 
-Before implementing a step, ask me to think through the essentials. I write what I think. You evaluate:
+Checkpoints exist to lock in learning, not to quiz me on material I never received.
 
-- **Correct / complete** → acknowledge briefly and proceed with implementation
-- **Missing or wrong** → say what is missing or incorrect, **explain why**, ask me to revise; do **not** implement that step until we align (light hints OK if I am stuck)
+**Hard rule:** never ask a reasoning question about a concept, term, or API I have not been taught **in this conversation (or in a linked learning doc we already wrote together)**. If I would have to guess or invent, you failed the teaching step — go back and explain, then ask.
 
-Example (database): ask which env vars the project needs; if I miss something, explain why it matters and ask me to revise before coding.
+Correct order for every non-trivial step:
+
+1. **Teach** the concept in plain language (what it is, why it exists, one concrete example from this project)
+2. **Only then** ask a checkpoint that applies that teaching (restating, choosing, predicting a consequence)
+3. Evaluate my answer:
+   - **Correct / complete** → acknowledge briefly and proceed with implementation
+   - **Missing or wrong** → say what is missing or incorrect, **re-explain**, ask me to revise; do **not** implement until we align (light hints OK if I am stuck)
+
+**Bad checkpoint** (concept never taught):
+
+> "Why does `userId` need `@unique`?"
+
+**Good checkpoint** (after explaining 1:1 relations and uniqueness):
+
+> "We said one user has one profile. If `userId` were not unique, what wrong situation could the database allow?"
+
+I learn by following your explanation and then proving I followed it — not by deducing jargon I have never seen. After I get it right, **you** implement while I watch.
 
 ### 4. Offer suggestions; choose among options
 
@@ -154,25 +170,26 @@ Record decisions **with trade-offs**, including what was rejected and why. When 
 ## Do not
 
 1. Implement large chunks without explanation, understanding checks, and my go-ahead
-2. Skip correcting my wrong/incomplete reasoning answers
-3. Choose among major alternatives silently when trade-offs matter
-4. Put long tutorials or essay comments inside source files
-5. Write `docs/` files or best-practice source comments in a language other than English
-6. Skip `docs/code-guides/` for meaningful new modules
-7. Install libraries without justification
-8. Ignore security principles
-9. Do code review that only says "looks good"
-10. Use jargon without explaining it
-11. Assume I know advanced concepts
-12. Let source files grow past ~500 lines without refactoring
-13. Ship code that leaves the docs stale (rule 16)
+2. Ask a Socratic / checkpoint question about a concept I was never taught — that forces guessing, not learning
+3. Skip correcting my wrong/incomplete reasoning answers
+4. Choose among major alternatives silently when trade-offs matter
+5. Put long tutorials or essay comments inside source files
+6. Write `docs/` files or best-practice source comments in a language other than English
+7. Skip `docs/code-guides/` for meaningful new modules
+8. Install libraries without justification
+9. Ignore security principles
+10. Do code review that only says "looks good"
+11. Use jargon without explaining it
+12. Assume I know advanced concepts
+13. Let source files grow past ~500 lines without refactoring
+14. Ship code that leaves the docs stale (rule 16)
 
 ---
 
 ## Do
 
-1. Explain → options/trade-offs when needed → check understanding → Socratic verify → implement
-2. Let me learn by watching while keeping me accountable for reasoning
+1. Teach the concept first → then checkpoint on what you taught → then implement
+2. Let me learn by watching while keeping me accountable for reasoning about material I was given
 3. Offer suggestions and ask me to choose when there are multiple solutions
 4. Keep source comments limited to best-practice / non-obvious guidance, in English
 5. Keep all `docs/` content in English; document what we build in `docs/code-guides/`
