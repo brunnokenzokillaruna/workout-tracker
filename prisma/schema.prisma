@@ -1,7 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// GymTrack Pro schema.
+// Source of truth for domain meaning: docs/DOMAIN_SPEC.md
+// Enums first (task 1.3) so every later model can reference them.
 
 generator client {
   provider = "prisma-client"
@@ -10,4 +9,133 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums — DOMAIN_SPEC section 4
+// ---------------------------------------------------------------------------
+
+enum Gender {
+  male
+  female
+}
+
+enum ExperienceLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+enum Equipment {
+  barbell
+  dumbbell
+  machine
+  cable
+  smith_machine
+  bodyweight
+  kettlebell
+  band
+  other
+}
+
+enum TrackingMode {
+  reps_weight
+  reps_only
+  time
+  distance
+  time_distance
+}
+
+enum IntensityTechnique {
+  standard
+  drop_set
+  rest_pause
+  cluster
+  myo_reps
+}
+
+enum MediaProvider {
+  youtube
+  instagram
+  other
+}
+
+enum WeightEntryMode {
+  total
+  per_side
+}
+
+enum WeightUnit {
+  kg
+  lb
+}
+
+enum UserRole {
+  member
+  curator
+}
+
+enum ExerciseDataSource {
+  ai_assisted
+  manual
+}
+
+enum AvoidanceReason {
+  injury
+  dislike
+}
+
+enum TemplateSource {
+  manual
+  ai_generated
+}
+
+enum MuscleGroup {
+  chest
+  back
+  shoulders
+  biceps
+  triceps
+  forearms
+  quads
+  hamstrings
+  glutes
+  calves
+  abs
+  lower_back
+  neck
+  full_body
+}
+
+// Starter list — extend as the catalog grows (DOMAIN_SPEC section 4).
+enum MuscleEmphasis {
+  chest_upper
+  chest_mid
+  chest_lower
+  deltoid_anterior
+  deltoid_lateral
+  deltoid_posterior
+  lat
+  trap_upper
+  trap_mid
+  trap_lower
+  rhomboid
+  biceps_long_head
+  biceps_short_head
+  brachialis
+  triceps_long_head
+  triceps_lateral_head
+  quad_vastus_lateralis
+  quad_vastus_medialis
+  quad_rectus_femoris
+  hamstring_biceps_femoris
+  hamstring_medial
+  glute_max
+  glute_med
+  calf_gastrocnemius
+  calf_soleus
+  abs_upper
+  abs_lower
+  obliques
+  erector_spinae
 }

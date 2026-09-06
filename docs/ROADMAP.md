@@ -28,9 +28,9 @@ The whole app depends on this, so it comes first. Source of truth: [DOMAIN_SPEC]
 
 | | Task | Acceptance criteria |
 |--|------|--------------------|
-| [ ] | 1.1 Provision Neon and wire configuration | Database created; `DATABASE_URL` in `.env` (ignored); `.env.example` committed with keys and no values; connection verified |
-| [ ] | 1.2 Install and initialise Prisma | `prisma/schema.prisma` exists; `prisma generate` succeeds; an empty baseline migration applies cleanly |
-| [ ] | 1.3 Enums | All 14 enums from DOMAIN_SPEC section 4 defined and migrated |
+| [x] | 1.1 Provision Neon and wire configuration | Database created; `DATABASE_URL` in `.env` (ignored); `.env.example` committed with keys and no values; connection verified |
+| [x] | 1.2 Install and initialise Prisma | `prisma/schema.prisma` exists; `prisma generate` succeeds; connection verified against Neon `dev` branch |
+| [x] | 1.3 Enums | All 14 enums from DOMAIN_SPEC section 4 defined and migrated (`20260906020843_add_domain_enums`) |
 | [ ] | 1.4 `User` and `UserProfile` | Includes `role` (member/curator), `gender`, `birthDate`, `bodyWeightKg`, `experienceLevel`, `preferredUnit`; migration applies |
 | [ ] | 1.5 `Exercise` and `ExerciseMedia` | Bilingual names, `searchAliases`, emphasis arrays, `trackingMode`, verification fields; media rows validated as `https` |
 | [ ] | 1.6 Templates | `WorkoutTemplate` and `TemplateExercise` with ordering |
