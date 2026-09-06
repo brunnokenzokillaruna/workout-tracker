@@ -87,7 +87,7 @@ Edit the checkboxes and `status` as you decide.
 | Feature | Status | Problem it solves | User value | Notes |
 |---------|--------|-------------------|------------|-------|
 | [ ] Account sign-in (individual) | `mvp` | Multi-user (you + family) | Private data per person | No social |
-| [ ] User profile (gender, birth date, body weight, experience) | `mvp` | Generic programs | Training scaled to the person | Feeds AI generator; sensitive data |
+| [ ] Training profile (gender, birth date, body weight, experience) | `mvp` | Generic programs | Training scaled to the person | Feeds AI generator; sensitive data; model `TrainingProfile` |
 | [ ] Exercise catalog (browse/filter) | `mvp` | Free apps lack options | Find what you actually train | Starts empty; grows only with reviewed exercises |
 | [ ] AI-assisted exercise entry (curator only) | `mvp` | Filling 8 fields by hand does not scale | Type a name, review proposed fields | Gemini proposes, curator approves; grounded on a vendored reference dataset |
 | [ ] Bilingual search (EN + pt-BR names) | `mvp` | Names differ by language | Search "supino" or "bench press" | Also prevents duplicate entries |

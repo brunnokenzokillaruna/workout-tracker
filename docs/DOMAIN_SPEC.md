@@ -28,7 +28,7 @@ Out of scope here: offline sync, S3 media hosting, wearables (FEATURES 5.3 / 5.4
 
 ```mermaid
 erDiagram
-  User ||--|| UserProfile : has
+  User ||--|| TrainingProfile : has
   User ||--o{ Exercise : owns_custom
   User ||--o{ WorkoutTemplate : owns
   User ||--o{ Workout : logs
@@ -68,13 +68,13 @@ Authentication is handled by Auth.js (TECH_STACK 2.8), so this table stays thin.
 | `role` | `UserRole` | `member` \| `curator` — only curators touch the global catalog, decision 5.16 |
 | `createdAt` | datetime | |
 
-### 3.2 UserProfile
+### 3.2 TrainingProfile
 
-Physical attributes that the AI generator needs. Separated from `User` because auth identity and body data change for different reasons and at different rates.
+Physical / training attributes that the AI generator needs. Separated from `User` because auth identity and body data change for different reasons and at different rates. Named `TrainingProfile` (not `UserProfile`) so it is not confused with login identity — decision 5.19.
 
 | Field | Type | Notes |
 |-------|------|-------|
-| `userId` | string | PK + FK, one profile per user |
+| `userId` | string | PK + FK, one profile per user (1:1) |
 | `gender` | `Gender` | `male` \| `female` — decision 5.5 |
 | `birthDate` | date? | store birth date, not age — decision 5.6 |
 | `bodyWeightKg` | decimal(5,2)? | current weight; history is `later` |
@@ -82,7 +82,7 @@ Physical attributes that the AI generator needs. Separated from `User` because a
 | `preferredUnit` | `WeightUnit` | default unit in the logging UI; per-set override always allowed |
 | `updatedAt` | datetime | |
 
-All four are nullable-friendly at signup: the generator must work with partial data and fall back to neutral defaults.
+`gender`, `birthDate`, `bodyWeightKg`, and `experienceLevel` are nullable at signup: the generator must work with partial data and fall back to neutral defaults. `preferredUnit` defaults to `kg`.
 
 ### 3.3 Exercise
 
@@ -420,7 +420,7 @@ Conversion factor: `1 lb = 0.45359237 kg`, applied once at write time.
 
 **Trade-off:** `weightKg` is derived data stored alongside its source, so the two can drift if written separately. Mitigation: a single domain function owns set creation and updates, computing `weightKg` from the entry every time; a test asserts the invariant `weightKg == convert(enteredWeight, enteredUnit) * (perSide ? 2 : 1)`.
 
-**Profile default:** `UserProfile.preferredUnit` sets the initial unit in the logging UI so the common case needs no toggling, with a per-set override for the odd machine.
+**Profile default:** `TrainingProfile.preferredUnit` sets the initial unit in the logging UI so the common case needs no toggling, with a per-set override for the odd machine.
 
 ### 5.14 Catalog starts empty; free-exercise-db is grounding reference, not seed data
 
@@ -513,6 +513,16 @@ Brunno's concern is legitimate: he is not a trained professional, and asking him
 
 **Rejected:** letting unverified AI output feed workout generation directly. It removes the only checkpoint between a fabricated field and a training program, and the error would surface months later with no trace to its origin.
 
+### 5.19 Profile table is named `TrainingProfile`, not `UserProfile`
+
+**Chosen by Brunno:** keep two tables (`User` + profile), but name the second `TrainingProfile`.
+
+**Why two tables:** Auth.js owns login identity; body/training attributes change for different reasons. Mixing them in one table makes the auth adapter and the gym form fight over the same row.
+
+**Why not `UserProfile`:** the names are too similar and invite confusion between “who is logged in” and “what the AI needs for programming”.
+
+**Rejected — one table:** simpler for MVP, but conflates auth identity with training data ahead of Phase 3.
+
 ---
 
 ## 6. Validation rules (domain layer, Vitest-covered)
@@ -579,7 +589,7 @@ Brunno's concern is legitimate: he is not a trained professional, and asking him
 - Keep it out of logs and out of error messages.
 - When building the AI prompt, send only what the generation needs and never store the raw prompt with identifiers alongside the model response.
 
-**Authorization.** Every query for `Workout`, `WorkoutTemplate`, `UserProfile`, favorites, and avoidances must be scoped by the session `userId` on the server. A custom `Exercise` (`ownerId != null`) is readable only by its owner. Row ownership is checked server-side, never inferred from a client-supplied id.
+**Authorization.** Every query for `Workout`, `WorkoutTemplate`, `TrainingProfile`, favorites, and avoidances must be scoped by the session `userId` on the server. A custom `Exercise` (`ownerId != null`) is readable only by its owner. Row ownership is checked server-side, never inferred from a client-supplied id.
 
 **Media URLs.** `ExerciseMedia.url` is user-supplied and later rendered as a link. Validate on write: allow only `https:` scheme and hostnames matching the declared provider; reject `javascript:` and `data:` URIs to prevent XSS through a crafted href. Render external links with `rel="noopener noreferrer"`.
 
