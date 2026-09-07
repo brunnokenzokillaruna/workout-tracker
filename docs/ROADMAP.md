@@ -32,7 +32,7 @@ The whole app depends on this, so it comes first. Source of truth: [DOMAIN_SPEC]
 | [x] | 1.2 Install and initialise Prisma | `prisma/schema.prisma` exists; `prisma generate` succeeds; connection verified against Neon `dev` branch |
 | [x] | 1.3 Enums | All 14 enums from DOMAIN_SPEC section 4 defined and migrated (`20260906020843_add_domain_enums`) |
 | [x] | 1.4 `User` and `TrainingProfile` | Includes `role` (member/curator), `gender`, `birthDate`, `bodyWeightKg`, `experienceLevel`, `preferredUnit`; 1:1 via `userId` as PK+FK; migration applies |
-| [ ] | 1.5 `Exercise` and `ExerciseMedia` | Bilingual names, `searchAliases`, emphasis arrays, `trackingMode`, verification fields; media rows validated as `https` |
+| [x] | 1.5 `Exercise` and `ExerciseMedia` | Bilingual names, `searchAliases`, emphasis arrays, `trackingMode`, verification fields; media rows with provider; GIN indexes on emphasis arrays |
 | [ ] | 1.6 Templates | `WorkoutTemplate` and `TemplateExercise` with ordering |
 | [ ] | 1.7 Workouts and sets | `Workout`, `WorkoutExercise`, `WorkoutSet` including the **self-relation** (`parentSetId`) for drop sets, rest-pause, and cluster stages |
 | [ ] | 1.8 Support tables | `ExerciseAvoidance`, `FavoriteExercise`, `FavoriteTemplate` |

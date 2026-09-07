@@ -22,7 +22,10 @@ model User {
   role      UserRole @default(member)
   createdAt DateTime @default(now())
 
-  trainingProfile TrainingProfile?
+  trainingProfile   TrainingProfile?
+  ownedExercises    Exercise[]       @relation("ExerciseOwner")
+  verifiedExercises Exercise[]       @relation("ExerciseVerifier")
+  addedMedia        ExerciseMedia[]  @relation("MediaAddedBy")
 }
 
 // Physical / training attributes for the AI generator.
@@ -36,6 +39,60 @@ model TrainingProfile {
   experienceLevel ExperienceLevel?
   preferredUnit   WeightUnit       @default(kg)
   updatedAt       DateTime         @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Exercise catalog — DOMAIN_SPEC 3.3 / 3.4
+// ---------------------------------------------------------------------------
+
+model Exercise {
+  id                String              @id @default(cuid())
+  // null = global catalog; set = personal custom exercise (decision 5.16)
+  ownerId           String?
+  owner             User?               @relation("ExerciseOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  name              String
+  namePtBr          String?
+  searchAliases     String[]            @default([])
+  primaryMuscle     MuscleGroup
+  primaryEmphasis   MuscleEmphasis[]    @default([])
+  secondaryEmphasis MuscleEmphasis[]    @default([])
+  emphasisRationale String?
+  equipment         Equipment
+  trackingMode      TrackingMode
+  formCues          String?
+  dataSource        ExerciseDataSource
+  wasGrounded       Boolean             @default(false)
+  isVerified        Boolean             @default(false)
+  verifiedById      String?
+  verifiedBy        User?               @relation("ExerciseVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  verifiedAt        DateTime?
+  isActive          Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+
+  media ExerciseMedia[]
+
+  @@index([ownerId])
+  @@index([primaryMuscle])
+  @@index([equipment])
+  @@index([isVerified])
+  @@index([primaryEmphasis], type: Gin)
+  @@index([secondaryEmphasis], type: Gin)
+}
+
+model ExerciseMedia {
+  id            String        @id @default(cuid())
+  exerciseId    String
+  exercise      Exercise      @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  provider      MediaProvider
+  url           String
+  label         String?
+  addedById     String?
+  addedBy       User?         @relation("MediaAddedBy", fields: [addedById], references: [id], onDelete: SetNull)
+  lastCheckedAt DateTime?
+  isBroken      Boolean       @default(false)
+
+  @@index([exerciseId])
+  @@index([provider])
 }
 
 // ---------------------------------------------------------------------------
