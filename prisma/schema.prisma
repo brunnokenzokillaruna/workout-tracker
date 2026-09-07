@@ -87,6 +87,10 @@ model Exercise {
   @@index([isVerified])
   @@index([primaryEmphasis], type: Gin)
   @@index([secondaryEmphasis], type: Gin)
+  // Fuzzy bilingual search / dedupe (requires pg_trgm — see search trigram migration)
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "Exercise_name_trgm_idx")
+  @@index([namePtBr(ops: raw("gin_trgm_ops"))], type: Gin, map: "Exercise_namePtBr_trgm_idx")
+  @@index([searchAliases], type: Gin, map: "Exercise_searchAliases_gin_idx")
 }
 
 model ExerciseMedia {
