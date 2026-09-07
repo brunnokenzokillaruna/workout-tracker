@@ -138,10 +138,11 @@ Known renames and additions to watch for as we build: `middleware` is now `proxy
 
 | | |
 |--|--|
-| **Chosen** | Prisma |
+| **Chosen** | Prisma — **installed: 7.10.0** (pinned; npm `latest` pointed at an 8.x RC) |
 | **Why** | Clear schema file; migrations; good TS types; fast to learn for CRUD |
 | **Why not raw SQL only** | Best learning for SQL depth, but slows features and increases boilerplate errors early |
 | **Why not Drizzle** | Excellent and lighter; Prisma wins here for docs/community for beginners — revisit later if you prefer |
+| **Runtime note (v7)** | `PrismaClient` requires a driver adapter (`@prisma/adapter-pg` + pooled `DATABASE_URL`). The CLI uses `DATABASE_URL_UNPOOLED` via `prisma7.config.ts` for migrations |
 | **Cost** | $0 |
 
 ---
