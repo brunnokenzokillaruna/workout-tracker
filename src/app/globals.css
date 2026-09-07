@@ -1,26 +1,184 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   GymTrack Pro design tokens — DESIGN_SPEC 2.1–2.4
+   Dark (instrument panel) is the default. Light ("chalk") via .theme-chalk
+   or prefers-color-scheme: light when no manual class is set.
+   --------------------------------------------------------------------------- */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --surface-0: #0b0c0b;
+  --surface-1: #151714;
+  --surface-2: #22251f;
+  --line: #33372e;
+
+  /* Text */
+  --text-primary: #f2f4ec;
+  --text-muted: #9aa08e;
+
+  /* Signal colours — text ON these fills uses --surface-0 */
+  --volt: #d7ff3e;
+  --amber: #ffb627;
+  --ember: #ff5436;
+
+  /* Space — 4px base (DESIGN_SPEC 2.3) */
+  --space-1: 0.25rem; /* 4 */
+  --space-2: 0.5rem; /* 8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem; /* 16 */
+  --space-5: 1.5rem; /* 24 */
+  --space-6: 2rem; /* 32 */
+  --space-7: 3rem; /* 48 */
+
+  /* Radii — tight, not pill */
+  --radius-control: 0.25rem; /* 4 */
+  --radius-card: 0.5rem; /* 8 */
+
+  /* Type scale (mobile first) */
+  --text-label: 0.75rem; /* 12 */
+  --text-body: 1rem; /* 16 */
+  --text-title: 1.5rem; /* 24 */
+  --text-numeral: 2.75rem; /* 44 */
+  --text-timer: 4.5rem; /* 72 */
+
+  /* Motion durations (DESIGN_SPEC 2.4) — springs live in JS later */
+  --motion-instant: 80ms;
+  --motion-quick: 150ms;
+  --motion-base: 220ms;
+  --motion-slow: 350ms;
+  --motion-stagger: 40ms;
+  --ease-out-soft: cubic-bezier(0.2, 0, 0, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Manual light override (Profile toggle later) */
+.theme-chalk {
+  --surface-0: #f4f3ec;
+  --surface-1: #ebe9e0;
+  --surface-2: #e0ddd2;
+  --line: #c9c6b8;
+  --text-primary: #0b0c0b;
+  --text-muted: #5c5f54;
+  /* volt / amber / ember stay; use as fills with dark text on top */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@media (prefers-color-scheme: light) {
+  :root:not(.theme-dark):not(.theme-chalk) {
+    --surface-0: #f4f3ec;
+    --surface-1: #ebe9e0;
+    --surface-2: #e0ddd2;
+    --line: #c9c6b8;
+    --text-primary: #0b0c0b;
+    --text-muted: #5c5f54;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --color-surface-0: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-volt: var(--volt);
+  --color-amber: var(--amber);
+  --color-ember: var(--ember);
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+
+  --text-label: var(--text-label);
+  --text-body: var(--text-body);
+  --text-title: var(--text-title);
+  --text-numeral: var(--text-numeral);
+  --text-timer: var(--text-timer);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  html.theme-chalk,
+  html:not(.theme-dark):not(.theme-chalk) {
+    /* color-scheme flips with media when chalk is active via preference */
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not(.theme-dark) {
+      color-scheme: light;
+    }
+  }
+
+  html.theme-dark {
+    color-scheme: dark;
+  }
+
+  html.theme-chalk {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--surface-0);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.5;
+    min-height: 100dvh;
+  }
+
+  /* Faint grain on the app background (DESIGN_SPEC 2.3) */
+  body::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .font-tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  .text-on-volt {
+    color: var(--surface-0);
+  }
+
+  /* Hazard stripe accent — punctuation, not wallpaper */
+  .hazard-stripe {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--volt),
+      var(--volt) 4px,
+      var(--surface-0) 4px,
+      var(--surface-0) 8px
+    );
+  }
+
+  .label-eyebrow {
+    font-family: var(--font-display);
+    font-size: var(--text-label);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
 }

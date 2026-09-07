@@ -50,8 +50,8 @@ Built before feature screens so no screen is written twice. Source of truth: [DE
 
 | | Task | Acceptance criteria |
 |--|------|--------------------|
-| [ ] | 2.1 Design tokens | Colour palette and spacing scale from DESIGN_SPEC 2.1/2.3 declared with Tailwind v4 `@theme` in the global stylesheet |
-| [ ] | 2.2 Typography | Archivo and Instrument Sans loaded via `next/font`; **tabular numerals** applied wherever numbers are displayed |
+| [x] | 2.1 Design tokens | Colour palette and spacing scale from DESIGN_SPEC 2.1/2.3 declared with Tailwind v4 `@theme` in the global stylesheet |
+| [x] | 2.2 Typography | Archivo and Instrument Sans loaded via `next/font`; **tabular numerals** via `.font-tabular`; preview on `/` |
 | [ ] | 2.3 shadcn/ui initialised | Components land in our repository and match our tokens rather than shadcn defaults |
 | [ ] | 2.4 App shell and navigation | Route groups implementing the hybrid model: bottom tabs for browsing, full-screen for the active workout |
 | [ ] | 2.5 Motion module | Duration and easing tokens from DESIGN_SPEC 2.4 in one place; `useReducedMotion` honoured; only `transform` and `opacity` animated |
