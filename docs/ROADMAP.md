@@ -35,7 +35,7 @@ The whole app depends on this, so it comes first. Source of truth: [DOMAIN_SPEC]
 | [x] | 1.5 `Exercise` and `ExerciseMedia` | Bilingual names, `searchAliases`, emphasis arrays, `trackingMode`, verification fields; media rows with provider; GIN indexes on emphasis arrays |
 | [x] | 1.6 Templates | `WorkoutTemplate` and `TemplateExercise` with ordering (`position` unique per template); no target weight (load from last performance) |
 | [x] | 1.7 Workouts and sets | `Workout`, `WorkoutExercise`, `WorkoutSet` including the **self-relation** (`parentSetId`) for drop sets, rest-pause, cluster, and myo-reps stages |
-| [ ] | 1.8 Support tables | `ExerciseAvoidance`, `FavoriteExercise`, `FavoriteTemplate` |
+| [x] | 1.8 Support tables | `ExerciseAvoidance`, `FavoriteExercise`, `FavoriteTemplate` |
 | [ ] | 1.9 Constraints and indexes | Uniqueness rules enforced in the database, not only in code; indexes on the query paths we actually use (last performance lookup, catalog search) |
 | [ ] | 1.10 Seed script | Creates the curator account; idempotent so it can be re-run |
 | [ ] | 1.11 Domain validation module | The 16 validation rules from DOMAIN_SPEC section 6 as pure functions, unit-tested |

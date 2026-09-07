@@ -28,6 +28,9 @@ model User {
   addedMedia        ExerciseMedia[]    @relation("MediaAddedBy")
   templates         WorkoutTemplate[]
   workouts          Workout[]
+  avoidances        ExerciseAvoidance[]
+  favoriteExercises FavoriteExercise[]
+  favoriteTemplates FavoriteTemplate[]
 }
 
 // Physical / training attributes for the AI generator.
@@ -75,6 +78,8 @@ model Exercise {
   templateExercises     TemplateExercise[]
   workoutExercises      WorkoutExercise[]  @relation("WorkoutExerciseCurrent")
   swappedFromInSessions WorkoutExercise[]  @relation("WorkoutExerciseSwappedFrom")
+  avoidances            ExerciseAvoidance[]
+  favoritedBy           FavoriteExercise[]
 
   @@index([ownerId])
   @@index([primaryMuscle])
@@ -116,6 +121,7 @@ model WorkoutTemplate {
 
   exercises TemplateExercise[]
   workouts  Workout[]
+  favoritedBy FavoriteTemplate[]
 
   @@index([userId])
 }
@@ -204,6 +210,44 @@ model WorkoutSet {
 
   @@index([workoutExerciseId])
   @@index([parentSetId])
+}
+
+// ---------------------------------------------------------------------------
+// Avoid list and favorites — DOMAIN_SPEC 3.8 / 3.9
+// ---------------------------------------------------------------------------
+
+model ExerciseAvoidance {
+  id         String          @id @default(cuid())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise        @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  reason     AvoidanceReason
+  note       String?
+  createdAt  DateTime        @default(now())
+
+  @@unique([userId, exerciseId])
+  @@index([userId])
+}
+
+model FavoriteExercise {
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@id([userId, exerciseId])
+}
+
+model FavoriteTemplate {
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateId String
+  template   WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  createdAt  DateTime        @default(now())
+
+  @@id([userId, templateId])
 }
 
 // ---------------------------------------------------------------------------

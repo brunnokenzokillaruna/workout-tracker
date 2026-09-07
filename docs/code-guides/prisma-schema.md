@@ -43,4 +43,4 @@ Declares the GymTrack Pro database structure for Prisma ORM: models, enums, rela
 - Config: `prisma7.config.ts` (CLI uses `DATABASE_URL_UNPOOLED`).
 - Spec: `docs/DOMAIN_SPEC.md`.
 - Client output: `src/generated/prisma` (gitignored; `prisma generate`).
-- Roadmap Phase 1 tasks 1.3–1.5 done; next: templates, then workouts/sets.
+- Roadmap Phase 1: models through 1.8 done; next: remaining indexes (trigram search), seed, domain validation.
