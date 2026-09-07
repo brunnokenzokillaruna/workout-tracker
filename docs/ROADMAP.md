@@ -38,7 +38,7 @@ The whole app depends on this, so it comes first. Source of truth: [DOMAIN_SPEC]
 | [x] | 1.8 Support tables | `ExerciseAvoidance`, `FavoriteExercise`, `FavoriteTemplate` |
 | [x] | 1.9 Constraints and indexes | Uniqueness rules in DB; GIN on emphasis arrays; trigram GIN on `name` / `namePtBr` (`pg_trgm`); GIN on `searchAliases`; history index `(userId, startedAt desc)` |
 | [x] | 1.10 Seed script | Creates the curator account (+ empty `TrainingProfile`); idempotent (`prisma db seed`) |
-| [ ] | 1.11 Domain validation module | The 16 validation rules from DOMAIN_SPEC section 6 as pure functions, unit-tested |
+| [x] | 1.11 Domain validation module | The 16 validation rules from DOMAIN_SPEC section 6 as pure functions, unit-tested (`npm test` — 21 cases) |
 
 **Why validation is a separate task from the schema:** the database enforces shape and referential integrity; it cannot express rules like "`weightKg` must be derived from `enteredWeight` and `enteredUnit`". Those live in code, and being pure functions makes them the cheapest thing in the project to test.
 
