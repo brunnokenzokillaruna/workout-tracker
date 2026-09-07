@@ -27,6 +27,7 @@ model User {
   verifiedExercises Exercise[]         @relation("ExerciseVerifier")
   addedMedia        ExerciseMedia[]    @relation("MediaAddedBy")
   templates         WorkoutTemplate[]
+  workouts          Workout[]
 }
 
 // Physical / training attributes for the AI generator.
@@ -70,8 +71,10 @@ model Exercise {
   isActive          Boolean             @default(true)
   createdAt         DateTime            @default(now())
 
-  media              ExerciseMedia[]
-  templateExercises  TemplateExercise[]
+  media                 ExerciseMedia[]
+  templateExercises     TemplateExercise[]
+  workoutExercises      WorkoutExercise[]  @relation("WorkoutExerciseCurrent")
+  swappedFromInSessions WorkoutExercise[]  @relation("WorkoutExerciseSwappedFrom")
 
   @@index([ownerId])
   @@index([primaryMuscle])
@@ -112,6 +115,7 @@ model WorkoutTemplate {
   createdAt  DateTime       @default(now())
 
   exercises TemplateExercise[]
+  workouts  Workout[]
 
   @@index([userId])
 }
@@ -132,6 +136,74 @@ model TemplateExercise {
   @@unique([templateId, position])
   @@index([templateId])
   @@index([exerciseId])
+}
+
+// ---------------------------------------------------------------------------
+// Live sessions — DOMAIN_SPEC 3.6 / 3.7
+// Template data is copied into these rows; templateId is provenance only.
+// ---------------------------------------------------------------------------
+
+model Workout {
+  id                    String           @id @default(cuid())
+  userId                String
+  user                  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateId            String?
+  template              WorkoutTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  templateNameSnapshot  String?
+  startedAt             DateTime         @default(now())
+  finishedAt            DateTime?
+  notes                 String?
+
+  exercises WorkoutExercise[]
+
+  @@index([userId, startedAt(sort: Desc)])
+}
+
+model WorkoutExercise {
+  id                     String    @id @default(cuid())
+  workoutId              String
+  workout                Workout   @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseId             String
+  exercise               Exercise  @relation("WorkoutExerciseCurrent", fields: [exerciseId], references: [id], onDelete: Restrict)
+  position               Int
+  restSeconds            Int?
+  swappedFromExerciseId  String?
+  swappedFrom            Exercise? @relation("WorkoutExerciseSwappedFrom", fields: [swappedFromExerciseId], references: [id], onDelete: SetNull)
+
+  sets WorkoutSet[]
+
+  @@unique([workoutId, position])
+  @@index([workoutId])
+  @@index([exerciseId])
+}
+
+model WorkoutSet {
+  id                String               @id @default(cuid())
+  workoutExerciseId String
+  workoutExercise   WorkoutExercise      @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+  // null = parent set; set = later stage of that parent (drop set / rest-pause / cluster / myo-reps)
+  parentSetId       String?
+  parentSet         WorkoutSet?          @relation("SetStages", fields: [parentSetId], references: [id], onDelete: Cascade)
+  stages            WorkoutSet[]         @relation("SetStages")
+  stageIndex        Int                  @default(0)
+  setNumber         Int?
+  // Meaningful on parents only; stages leave this null (domain rule 1)
+  technique         IntensityTechnique?
+  weightKg          Decimal?             @db.Decimal(7, 2)
+  enteredWeight     Decimal?             @db.Decimal(6, 2)
+  enteredUnit       WeightUnit?
+  weightEntryMode   WeightEntryMode?
+  reps              Int?
+  durationSeconds   Int?
+  distanceMeters    Decimal?             @db.Decimal(8, 2)
+  rpe               Decimal?             @db.Decimal(3, 1)
+  // Rest taken before this stage; stages only (decision 5.10)
+  intraRestSeconds  Int?
+  isCompleted       Boolean              @default(false)
+  completedAt       DateTime?
+
+  @@index([workoutExerciseId])
+  @@index([parentSetId])
 }
 
 // ---------------------------------------------------------------------------
