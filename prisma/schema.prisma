@@ -23,9 +23,10 @@ model User {
   createdAt DateTime @default(now())
 
   trainingProfile   TrainingProfile?
-  ownedExercises    Exercise[]       @relation("ExerciseOwner")
-  verifiedExercises Exercise[]       @relation("ExerciseVerifier")
-  addedMedia        ExerciseMedia[]  @relation("MediaAddedBy")
+  ownedExercises    Exercise[]         @relation("ExerciseOwner")
+  verifiedExercises Exercise[]         @relation("ExerciseVerifier")
+  addedMedia        ExerciseMedia[]    @relation("MediaAddedBy")
+  templates         WorkoutTemplate[]
 }
 
 // Physical / training attributes for the AI generator.
@@ -69,7 +70,8 @@ model Exercise {
   isActive          Boolean             @default(true)
   createdAt         DateTime            @default(now())
 
-  media ExerciseMedia[]
+  media              ExerciseMedia[]
+  templateExercises  TemplateExercise[]
 
   @@index([ownerId])
   @@index([primaryMuscle])
@@ -93,6 +95,43 @@ model ExerciseMedia {
 
   @@index([exerciseId])
   @@index([provider])
+}
+
+// ---------------------------------------------------------------------------
+// Templates — DOMAIN_SPEC 3.5 (plan only; load comes from last performance)
+// ---------------------------------------------------------------------------
+
+model WorkoutTemplate {
+  id         String         @id @default(cuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  notes      String?
+  source     TemplateSource
+  isArchived Boolean        @default(false)
+  createdAt  DateTime       @default(now())
+
+  exercises TemplateExercise[]
+
+  @@index([userId])
+}
+
+model TemplateExercise {
+  id              String             @id @default(cuid())
+  templateId      String
+  template        WorkoutTemplate    @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  exerciseId      String
+  exercise        Exercise           @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  position        Int
+  targetSets      Int?
+  targetRepsMin   Int?
+  targetRepsMax   Int?
+  targetTechnique IntensityTechnique @default(standard)
+  restSeconds     Int?
+
+  @@unique([templateId, position])
+  @@index([templateId])
+  @@index([exerciseId])
 }
 
 // ---------------------------------------------------------------------------

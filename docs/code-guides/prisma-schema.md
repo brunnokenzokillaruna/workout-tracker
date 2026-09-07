@@ -11,6 +11,7 @@ Declares the GymTrack Pro database structure for Prisma ORM: models, enums, rela
 - **`Exercise.ownerId` nullable** — `null` means global catalog; set means personal custom (5.16).
 - **Emphasis as enum arrays** — multiple targets per exercise without a join table for MVP (5.7).
 - **`ExerciseMedia` as its own table** — several links per exercise; dead links auditable per provider (5.4).
+- **Templates without target weight** — plan holds sets/reps/rest/technique; load comes from last performance when a workout is started (5.11).
 
 ## Alternatives and trade-offs
 
@@ -19,6 +20,8 @@ Declares the GymTrack Pro database structure for Prisma ORM: models, enums, rela
 | One `Exercise` table | Separate global/custom tables | Same shape; search and templates treat both as exercises |
 | Enum arrays for emphasis | Join table `ExerciseEmphasis` | Overkill while lists stay small; revisit if metadata per emphasis appears |
 | `userId` as PK on `TrainingProfile` | Separate `id` + `@unique userId` | Same 1:1 guarantee; fewer columns |
+| Copy template into workout (Phase 1.7) | Live pointer to template rows | Editing a template must not rewrite history (5.1) |
+| Explicit `position` on template lines | Rely on insertion order | Relational rows have no inherent order |
 
 ## Bugs / edge cases
 
